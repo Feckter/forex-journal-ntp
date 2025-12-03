@@ -1,0 +1,1530 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title>Forex Trading Journal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg-light: #f0f4ff;
+      --blue-dark: #0f4c75;
+      --blue: #3282b8;
+      --gray-light: #f5f5f5;
+      --gray: #b0b0b0;
+      --text-main: #222222;
+      --win: #2e7d32;
+      --loss: #c62828;
+      --card-radius: 16px;
+      --shadow-soft: 0 10px 25px rgba(0, 0, 0, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #e3f2fd, #f0f4ff);
+      color: var(--text-main);
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+    }
+
+    .app {
+      display: flex;
+      width: 100%;
+      max-width: 1200px;
+      margin: 16px;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: var(--shadow-soft);
+      background: #ffffff;
+    }
+
+    .sidebar {
+      width: 280px;
+      background: #ffffff;
+      border-right: 1px solid #e0e0e0;
+      padding: 16px 16px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .sidebar-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--blue-dark);
+      margin-bottom: 4px;
+    }
+
+    .sidebar-subtitle {
+      font-size: 12px;
+      color: #666666;
+      margin-bottom: 12px;
+    }
+
+    .sidebar-section-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin: 0 0 8px;
+      color: #555;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 8px;
+    }
+
+    label {
+      font-size: 12px;
+      color: #555;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    textarea,
+    select {
+      border: 1px solid #dde3ef;
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-size: 13px;
+      outline: none;
+      background: #f9fbff;
+      transition: border 0.15s ease, box-shadow 0.15s ease, background 0.15s;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    textarea:focus,
+    select:focus {
+      border-color: var(--blue);
+      background: #ffffff;
+      box-shadow: 0 0 0 2px rgba(50, 130, 184, 0.1);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.08s ease, box-shadow 0.08s ease, opacity 0.1s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    button:active {
+      transform: translateY(1px);
+      box-shadow: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+      color: #ffffff;
+      box-shadow: 0 8px 16px rgba(15, 76, 117, 0.3);
+    }
+
+    .btn-primary:hover {
+      opacity: 0.92;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: #555;
+    }
+
+    .btn-small {
+      padding: 4px 10px;
+      font-size: 11px;
+      box-shadow: none;
+    }
+
+    .btn-danger {
+      color: var(--loss);
+    }
+
+    .topic-list {
+      margin-top: 8px;
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .topic-item {
+      width: 100%;
+      text-align: left;
+      padding: 10px 12px;
+      margin-bottom: 6px;
+      border-radius: 12px;
+      background: #f7f9fc;
+      border: 1px solid transparent;
+      font-size: 13px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .topic-item span.name {
+      font-weight: 600;
+      color: var(--blue-dark);
+    }
+
+    .topic-item span.meta {
+      font-size: 11px;
+      color: #777;
+    }
+
+    .topic-item.active {
+      background: #e3f2fd;
+      border-color: #bbdefb;
+    }
+
+    .main {
+      flex: 1;
+      padding: 20px 24px 24px;
+      background: radial-gradient(circle at top left, #e3f2fd 0, #ffffff 40%);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 4px;
+      gap: 12px;
+    }
+
+    .header-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--blue-dark);
+    }
+
+    .header-subtitle {
+      font-size: 12px;
+      color: #666;
+    }
+
+    .badge {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #e3f2fd;
+      color: #blue-dark;
+      border: 1px solid #bbdefb;
+    }
+
+    .header-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .user-switcher {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      font-size: 11px;
+    }
+
+    .user-switcher input {
+      max-width: 150px;
+      padding: 6px 8px;
+      font-size: 11px;
+    }
+
+    .topic-summary-card {
+      background: #ffffff;
+      border-radius: var(--card-radius);
+      padding: 14px 16px;
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .topic-summary-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .topic-summary-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--blue-dark);
+    }
+
+    .topic-summary-desc {
+      font-size: 12px;
+      color: #666;
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .stat-card {
+      background: #f7f9fc;
+      border-radius: 12px;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: #777;
+    }
+
+    .stat-value {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .pnl-positive {
+      color: var(--win);
+    }
+
+    .pnl-negative {
+      color: var(--loss);
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #444;
+    }
+
+    .add-trade-card {
+      background: #ffffff;
+      border-radius: var(--card-radius);
+      padding: 14px 16px;
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .add-trade-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 12px;
+    }
+
+    .trade-list {
+      margin-top: 4px;
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 4px;
+      min-height: 0;
+    }
+
+    .trade-card {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 10px;
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+      border: 1px solid #e3eaf7;
+    }
+
+    .trade-image {
+      border-radius: 12px;
+      background: #eef2f7;
+      padding: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      justify-content: center;
+      align-items: center;
+      font-size: 10px;
+      color: #999;
+    }
+
+    .trade-image-multi {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 4px;
+    }
+
+    .trade-thumb {
+      position: relative;
+      width: 100%;
+      padding-top: 100%;
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      background: #dde3ef;
+    }
+
+    .trade-thumb img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .trade-thumb::after {
+      content: "ดูรูป";
+      position: absolute;
+      right: 4px;
+      bottom: 4px;
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.5);
+      color: #fff;
+    }
+
+    .trade-image-empty {
+      font-size: 10px;
+      color: #999;
+      text-align: center;
+      padding: 8px 4px;
+    }
+
+    .trade-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .trade-title-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 6px;
+      align-items: baseline;
+    }
+
+    .trade-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .trade-tags {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      font-size: 11px;
+    }
+
+    .tag {
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+    }
+
+    .tag-win {
+      border-color: rgba(46, 125, 50, 0.3);
+      background: rgba(46, 125, 50, 0.04);
+      color: var(--win);
+    }
+
+    .tag-loss {
+      border-color: rgba(198, 40, 40, 0.3);
+      background: rgba(198, 40, 40, 0.04);
+      color: var(--loss);
+    }
+
+    .trade-amount {
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    .trade-details {
+      font-size: 12px;
+      color: #666;
+      white-space: pre-wrap;
+    }
+
+    .trade-actions-row {
+      margin-top: 4px;
+      display: flex;
+      gap: 6px;
+      justify-content: flex-end;
+    }
+
+    .empty-state {
+      font-size: 12px;
+      color: #777;
+      padding: 10px 4px;
+    }
+
+    .no-topic-selected {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: #777;
+      text-align: center;
+      font-size: 13px;
+    }
+
+    .no-topic-selected span.icon {
+      font-size: 32px;
+    }
+
+    /* Lightbox */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .lightbox.show {
+      display: flex;
+    }
+
+    .lightbox-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+    }
+
+    .lightbox-content {
+      position: relative;
+      max-width: 90vw;
+      max-height: 90vh;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .lightbox-img-wrapper {
+      max-width: 90vw;
+      max-height: 80vh;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #000;
+    }
+
+    .lightbox-img-wrapper img {
+      display: block;
+      max-width: 100%;
+      max-height: 80vh;
+      object-fit: contain;
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: -32px;
+      right: 0;
+      border-radius: 999px;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      background: rgba(255, 255, 255, 0.9);
+      color: #333;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+    }
+
+    .lightbox-nav {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .lightbox-nav button {
+      border-radius: 999px;
+      font-size: 14px;
+      padding: 6px 10px;
+      background: rgba(255, 255, 255, 0.9);
+      color: #333;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+    }
+
+    .lightbox-counter {
+      font-size: 12px;
+      color: #eee;
+      margin: 0 4px;
+    }
+
+    @media (max-width: 900px) {
+      .app {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #e0e0e0;
+      }
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .header-right {
+        align-items: flex-start;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .add-trade-grid {
+        grid-template-columns: 1fr;
+      }
+      .stats-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .trade-card {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div>
+        <div class="sidebar-title">หัวข้อเทรด Forex</div>
+        <div class="sidebar-subtitle">
+          แยกตามกลยุทธ์ / คู่เงิน / บัญชี ฯลฯ แล้วจดสถิติของแต่ละหัวข้อ
+        </div>
+      </div>
+
+      <form id="topicForm">
+        <div class="sidebar-section-title">สร้างหัวข้อใหม่</div>
+        <div class="form-group">
+          <label for="topicName">ชื่อหัวข้อ</label>
+          <input
+            type="text"
+            id="topicName"
+            placeholder="เช่น กลยุทธ์ London Breakout"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="topicDescription">รายละเอียด</label>
+          <textarea
+            id="topicDescription"
+            placeholder="สั้น ๆ ว่าหัวข้อนี้คืออะไร"
+          ></textarea>
+        </div>
+        <button type="submit" class="btn-primary" style="width: 100%">
+          + เพิ่มหัวข้อ
+        </button>
+      </form>
+
+      <div class="sidebar-section-title" style="margin-top: 10px">
+        หัวข้อทั้งหมด
+      </div>
+      <div id="topicList" class="topic-list">
+        <!-- Topic items here -->
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <div class="header">
+        <div>
+          <div class="header-title">Forex Trading Journal</div>
+          <div class="header-subtitle">
+            บันทึกผลเทรดเป็นระบบ ดู Win Rate และกำไร/ขาดทุนรวมของแต่ละกลยุทธ์
+          </div>
+        </div>
+        <div class="header-right">
+          <div class="badge">โทนสีฟ้า-เทา เรียบ มินิมอล</div>
+          <div class="user-switcher">
+            <span>ผู้ใช้ปัจจุบัน:</span>
+            <input
+              type="text"
+              id="userIdInput"
+              placeholder="เช่น kung, test1"
+            />
+            <button type="button" class="btn-ghost btn-small" id="switchUserBtn">
+              เปลี่ยนผู้ใช้
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- GLOBAL DASHBOARD -->
+      <section id="globalDashboard" class="topic-summary-card">
+        <div class="topic-summary-header">
+          <div>
+            <div class="topic-summary-title">ภาพรวมทุกหัวข้อ</div>
+            <div class="topic-summary-desc">
+              สรุปสถิติทุกกลยุทธ์/หัวข้อที่คุณบันทึกไว้ (ตามผู้ใช้)
+            </div>
+          </div>
+        </div>
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-label">จำนวนหัวข้อ</div>
+            <div class="stat-value" id="globalTopicsCount">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">จำนวนเทรดทั้งหมด</div>
+            <div class="stat-value" id="globalTotalTrades">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Win Rate รวม</div>
+            <div class="stat-value" id="globalWinRate">0%</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">PnL รวมทุกหัวข้อ</div>
+            <div class="stat-value" id="globalPnL">0.00 ฿</div>
+          </div>
+        </div>
+        <div
+          style="font-size: 11px; color: #777; margin-top: 4px"
+          id="globalWinsLossesText"
+        ></div>
+      </section>
+
+      <div id="noTopicState" class="no-topic-selected">
+        <span class="icon">📊</span>
+        <div>ยังไม่มีหัวข้อที่เลือก</div>
+        <div>เริ่มต้นโดยการสร้างหัวข้อใหม่ทางด้านซ้ายก่อน</div>
+      </div>
+
+      <div
+        id="topicContent"
+        style="display: none; flex: 1; display: flex; flex-direction: column; gap: 12px; min-height: 0;"
+      >
+        <!-- Summary -->
+        <section class="topic-summary-card">
+          <div class="topic-summary-header">
+            <div>
+              <div id="topicTitle" class="topic-summary-title"></div>
+              <div
+                id="topicDescriptionText"
+                class="topic-summary-desc"
+              ></div>
+            </div>
+            <div class="badge" id="topicTradesCountBadge"></div>
+          </div>
+          <div class="stats-row">
+            <div class="stat-card">
+              <div class="stat-label">จำนวนเทรดทั้งหมด</div>
+              <div class="stat-value" id="statTotalTrades">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">ชนะ</div>
+              <div class="stat-value" id="statWins">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">แพ้</div>
+              <div class="stat-value" id="statLosses">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Win Rate</div>
+              <div class="stat-value" id="statWinRate">0%</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Add / Edit trade -->
+        <section class="add-trade-card">
+          <div class="section-title">เพิ่ม / แก้ไขรายการเทรดในหัวข้อนี้</div>
+          <div
+            id="editModeBanner"
+            style="display: none; font-size: 11px; color: #555; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; gap: 8px;"
+          >
+            <span>กำลังแก้ไขรายการเทรด... (กด “ยกเลิกการแก้ไข” เพื่อกลับไปเพิ่มรายการใหม่)</span>
+            <button
+              type="button"
+              class="btn-ghost btn-small"
+              id="cancelEditBtn"
+            >
+              ยกเลิกการแก้ไข
+            </button>
+          </div>
+          <form id="tradeForm">
+            <div class="add-trade-grid">
+              <div>
+                <div class="form-group">
+                  <label for="tradeTitle">ชื่อออเดอร์</label>
+                  <input
+                    type="text"
+                    id="tradeTitle"
+                    placeholder="เช่น Buy XAUUSD หลังเบรกโซน"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="tradeDetails">รายละเอียด / เหตุผลเข้าเทรด</label>
+                  <textarea
+                    id="tradeDetails"
+                    placeholder="เขียนเหตุผลเข้าออก, Timeframe, รูปแบบราคา ฯลฯ"
+                  ></textarea>
+                </div>
+              </div>
+              <div>
+                <div class="form-group">
+                  <label for="tradeResult">ผลลัพธ์</label>
+                  <select id="tradeResult">
+                    <option value="WIN">ชนะ</option>
+                    <option value="LOSS">แพ้</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="tradeAmount"
+                    >จำนวนเงินผลลัพธ์ (ชนะใส่ +, แพ้ใส่จำนวนบวก ระบบจะลบให้เอง)</label
+                  >
+                  <input
+                    type="number"
+                    id="tradeAmount"
+                    step="0.01"
+                    placeholder="เช่น 500 หรือ 250.75"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="tradeImage"
+                    >อัปโหลดรูป (เลือกได้หลายรูป สูงสุด 10 รูป)</label
+                  >
+                  <input
+                    type="file"
+                    id="tradeImage"
+                    accept="image/*"
+                    multiple
+                  />
+                </div>
+                <button
+                  type="submit"
+                  class="btn-primary"
+                  id="tradeSubmitButton"
+                  style="width: 100%"
+                >
+                  + เพิ่มรายการเทรด
+                </button>
+              </div>
+            </div>
+          </form>
+        </section>
+
+        <!-- Trade list -->
+        <section
+          style="flex: 1; display: flex; flex-direction: column; min-height: 0;"
+        >
+          <div class="section-title">รายการเทรดในหัวข้อนี้</div>
+          <div id="tradeList" class="trade-list">
+            <!-- Trade cards here -->
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- Lightbox for full image view -->
+  <div id="imageLightbox" class="lightbox">
+    <div class="lightbox-backdrop" id="lightboxBackdrop"></div>
+    <div class="lightbox-content">
+      <button class="lightbox-close" id="lightboxClose">×</button>
+      <div class="lightbox-img-wrapper">
+        <img id="lightboxImage" src="" alt="Trade image" />
+      </div>
+      <div class="lightbox-nav">
+        <button id="lightboxPrev">‹ ก่อนหน้า</button>
+        <span class="lightbox-counter" id="lightboxCounter">1 / 1</span>
+        <button id="lightboxNext">ถัดไป ›</button>
+        <button id="lightboxDelete">🗑 ลบรูปนี้</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = window.location.origin; // ใช้ host เดียวกับที่เปิดหน้าเว็บ
+
+    const STORAGE_PREFIX = "forexJournalTopicsV1_";
+
+    let topics = [];
+    let selectedTopicId = null;
+    let editingTradeId = null;
+    let currentUserId = null;
+
+    // สำหรับ lightbox
+    let currentLightboxImages = [];
+    let currentLightboxIndex = 0;
+    let currentLightboxTradeId = null;
+
+    function getStorageKey() {
+      const user = currentUserId || "default";
+      return STORAGE_PREFIX + user;
+    }
+
+    function saveToStorage() {
+      if (!currentUserId) return;
+      localStorage.setItem(getStorageKey(), JSON.stringify({ topics }));
+    }
+
+    function loadFromStorage() {
+      const raw = localStorage.getItem(getStorageKey());
+      if (!raw) {
+        topics = [];
+        selectedTopicId = null;
+        return;
+      }
+      try {
+        const data = JSON.parse(raw);
+        topics = (data.topics || []).map((topic) => ({
+          ...topic,
+          trades: (topic.trades || []).map((tr) => ({
+            ...tr,
+            images: tr.images
+              ? tr.images
+              : tr.imageData
+              ? [tr.imageData]
+              : [],
+          })),
+        }));
+      } catch (e) {
+        console.error("Failed to parse storage", e);
+        topics = [];
+        selectedTopicId = null;
+      }
+    }
+
+    function findTopicById(id) {
+      return topics.find((t) => t.id === id);
+    }
+
+    function renderTopicsList() {
+      const listEl = document.getElementById("topicList");
+      if (!topics.length) {
+        listEl.innerHTML =
+          '<div class="empty-state">ยังไม่มีหัวข้อ ลองสร้างหัวข้อแรกดูนะ</div>';
+        return;
+      }
+      listEl.innerHTML = topics
+        .map((t) => {
+          const total = (t.trades || []).length;
+          const wins = (t.trades || []).filter((tr) => tr.result === "WIN")
+            .length;
+          const losses = total - wins;
+          return `
+            <button class="topic-item ${
+              t.id === selectedTopicId ? "active" : ""
+            }" data-id="${t.id}">
+              <span class="name">${t.name || "ไม่ระบุชื่อ"}</span>
+              <span class="meta">${total} เทรด • ชนะ ${wins} / แพ้ ${losses}</span>
+            </button>
+          `;
+        })
+        .join("");
+    }
+
+    function renderGlobalDashboard() {
+      const topicsCount = topics.length;
+      const allTrades = topics.flatMap((t) => t.trades || []);
+      const totalTrades = allTrades.length;
+      const wins = allTrades.filter((t) => t.result === "WIN").length;
+      const losses = allTrades.filter((t) => t.result === "LOSS").length;
+      const winRate = totalTrades
+        ? ((wins / totalTrades) * 100).toFixed(1)
+        : "0.0";
+      const totalPnL = allTrades.reduce((sum, t) => {
+        const amt = Number(t.amount) || 0;
+        return sum + (t.result === "WIN" ? amt : -amt);
+      }, 0);
+
+      document.getElementById("globalTopicsCount").textContent = topicsCount;
+      document.getElementById("globalTotalTrades").textContent = totalTrades;
+      document.getElementById("globalWinRate").textContent = `${winRate}%`;
+
+      const pnlEl = document.getElementById("globalPnL");
+      const absText =
+        Math.abs(totalPnL).toLocaleString("th-TH", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }) + " ฿";
+
+      pnlEl.classList.remove("pnl-positive", "pnl-negative");
+      if (totalPnL > 0) {
+        pnlEl.textContent = "+" + absText;
+        pnlEl.classList.add("pnl-positive");
+      } else if (totalPnL < 0) {
+        pnlEl.textContent = "-" + absText;
+        pnlEl.classList.add("pnl-negative");
+      } else {
+        pnlEl.textContent = "0.00 ฿";
+      }
+
+      document.getElementById(
+        "globalWinsLossesText"
+      ).textContent = `ชนะ ${wins} ไม้ • แพ้ ${losses} ไม้`;
+    }
+
+    function renderTopicContent() {
+      const noTopicState = document.getElementById("noTopicState");
+      const topicContent = document.getElementById("topicContent");
+      const topic = findTopicById(selectedTopicId);
+      if (!topic) {
+        noTopicState.style.display = "flex";
+        topicContent.style.display = "none";
+        return;
+      }
+
+      noTopicState.style.display = "none";
+      topicContent.style.display = "flex";
+
+      const trades = topic.trades || [];
+
+      const totalTrades = trades.length;
+      const wins = trades.filter((t) => t.result === "WIN").length;
+      const losses = trades.filter((t) => t.result === "LOSS").length;
+      const winRate = totalTrades
+        ? ((wins / totalTrades) * 100).toFixed(1)
+        : "0.0";
+
+      const totalPnL = trades.reduce((sum, t) => {
+        const amt = Number(t.amount) || 0;
+        return sum + (t.result === "WIN" ? amt : -amt);
+      }, 0);
+
+      document.getElementById("topicTitle").textContent =
+        topic.name || "ไม่ระบุชื่อ";
+      document.getElementById("topicDescriptionText").textContent =
+        topic.description || "ไม่มีคำอธิบาย";
+
+      document.getElementById(
+        "topicTradesCountBadge"
+      ).textContent = `${totalTrades} เทรดในหัวข้อนี้`;
+
+      document.getElementById("statTotalTrades").textContent = totalTrades;
+      document.getElementById("statWins").textContent = wins;
+      document.getElementById("statLosses").textContent = losses;
+      document.getElementById("statWinRate").textContent = `${winRate}%`;
+
+      const titleEl = document.getElementById("topicTitle");
+      titleEl.style.position = "relative";
+
+      const existing = document.getElementById("topicPnLBadge");
+      if (existing) existing.remove();
+
+      const pnlText =
+        totalPnL.toLocaleString("th-TH", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }) + " ฿";
+
+      const pnlBadge = document.createElement("span");
+      pnlBadge.id = "topicPnLBadge";
+      pnlBadge.style.fontSize = "11px";
+      pnlBadge.style.marginLeft = "8px";
+      pnlBadge.style.padding = "3px 8px";
+      pnlBadge.style.borderRadius = "999px";
+      pnlBadge.style.border = "1px solid rgba(0,0,0,0.06)";
+      pnlBadge.style.background = "#f7f9fc";
+      if (totalPnL > 0) {
+        pnlBadge.style.color = "#2e7d32";
+        pnlBadge.textContent = `PnL รวม: +${pnlText}`;
+      } else if (totalPnL < 0) {
+        pnlBadge.style.color = "#c62828";
+        pnlBadge.textContent = `PnL รวม: -${pnlText.replace("-", "")}`;
+      } else {
+        pnlBadge.style.color = "#555";
+        pnlBadge.textContent = `PnL รวม: 0.00 ฿`;
+      }
+      titleEl.appendChild(pnlBadge);
+
+      const tradeListEl = document.getElementById("tradeList");
+      if (!trades.length) {
+        tradeListEl.innerHTML =
+          '<div class="empty-state">ยังไม่มีรายการเทรดในหัวข้อนี้</div>';
+        return;
+      }
+
+      tradeListEl.innerHTML = trades
+        .map((t) => {
+          const isWin = t.result === "WIN";
+          const amountFormatted =
+            (Number(t.amount) || 0).toLocaleString("th-TH", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            }) + " ฿";
+
+          const amountDisplay = isWin
+            ? "+" + amountFormatted
+            : "-" + amountFormatted;
+
+          const amountClass = isWin ? "pnl-positive" : "pnl-negative";
+
+          const images = t.images || [];
+          let imgHtml = "";
+
+          if (images.length) {
+            const limitedThumbs = images.slice(0, 4);
+            imgHtml = `
+              <div class="trade-image">
+                <div class="trade-image-multi">
+                  ${limitedThumbs
+                    .map(
+                      (img, idx) => `
+                      <div class="trade-thumb"
+                        onclick="onOpenTradeImage('${t.id}', ${idx})">
+                        <img src="${img}" alt="Trade image ${idx + 1}" />
+                      </div>
+                    `
+                    )
+                    .join("")}
+                </div>
+                ${
+                  images.length > 4
+                    ? `<div style="font-size:10px;color:#666;margin-top:4px;">+ อีก ${
+                        images.length - 4
+                      } รูป (กดรูปเพื่อเลื่อนดู)</div>`
+                    : ""
+                }
+              </div>
+            `;
+          } else {
+            imgHtml = `
+              <div class="trade-image">
+                <div class="trade-image-empty">ไม่มีรูป</div>
+              </div>
+            `;
+          }
+
+          return `
+            <div class="trade-card">
+              ${imgHtml}
+              <div class="trade-info">
+                <div class="trade-title-row">
+                  <div class="trade-title">${t.title || "ไม่ระบุชื่อ"}</div>
+                  <div class="trade-tags">
+                    <span class="tag ${
+                      isWin ? "tag-win" : "tag-loss"
+                    }">${isWin ? "ชนะ" : "แพ้"}</span>
+                    <span class="trade-amount ${amountClass}">${amountDisplay}</span>
+                  </div>
+                </div>
+                ${
+                  t.details
+                    ? `<div class="trade-details">${t.details}</div>`
+                    : ""
+                }
+                <div class="trade-actions-row">
+                  <button type="button" class="btn-ghost btn-small" onclick="onEditTrade('${t.id}')">แก้ไข</button>
+                  <button type="button" class="btn-ghost btn-small btn-danger" onclick="onDeleteTrade('${t.id}')">ลบ</button>
+                </div>
+              </div>
+            </div>
+          `;
+        })
+        .join("");
+    }
+
+    function selectTopic(id) {
+      exitEditMode();
+      selectedTopicId = id;
+      renderTopicsList();
+      renderTopicContent();
+      renderGlobalDashboard();
+    }
+
+    function addTradeToTopic({ title, details, result, amount, images }) {
+      const topic = findTopicById(selectedTopicId);
+      if (!topic) return;
+      if (!topic.trades) topic.trades = [];
+      const trade = {
+        id: Date.now().toString(),
+        title,
+        details,
+        result,
+        amount,
+        images: images || [],
+      };
+      topic.trades.unshift(trade);
+      saveToStorage();
+      renderTopicContent();
+      renderTopicsList();
+      renderGlobalDashboard();
+    }
+
+    function deleteTrade(tradeId) {
+      const topic = findTopicById(selectedTopicId);
+      if (!topic || !topic.trades) return;
+      const idx = topic.trades.findIndex((t) => t.id === tradeId);
+      if (idx === -1) return;
+      topic.trades.splice(idx, 1);
+      if (editingTradeId === tradeId) {
+        exitEditMode();
+      }
+      saveToStorage();
+      renderTopicContent();
+      renderTopicsList();
+      renderGlobalDashboard();
+    }
+
+    function enterEditMode(trade) {
+      editingTradeId = trade.id;
+      const titleInput = document.getElementById("tradeTitle");
+      const detailsInput = document.getElementById("tradeDetails");
+      const resultSelect = document.getElementById("tradeResult");
+      const amountInput = document.getElementById("tradeAmount");
+      const imageInput = document.getElementById("tradeImage");
+      const editBanner = document.getElementById("editModeBanner");
+      const submitBtn = document.getElementById("tradeSubmitButton");
+
+      titleInput.value = trade.title || "";
+      detailsInput.value = trade.details || "";
+      resultSelect.value = trade.result || "WIN";
+      amountInput.value = trade.amount != null ? trade.amount : "";
+      if (imageInput) imageInput.value = "";
+
+      editBanner.style.display = "flex";
+      submitBtn.textContent = "บันทึกการแก้ไข";
+    }
+
+    function exitEditMode() {
+      editingTradeId = null;
+      const tradeForm = document.getElementById("tradeForm");
+      const resultSelect = document.getElementById("tradeResult");
+      const editBanner = document.getElementById("editModeBanner");
+      const submitBtn = document.getElementById("tradeSubmitButton");
+
+      if (editBanner) editBanner.style.display = "none";
+      if (submitBtn) submitBtn.textContent = "+ เพิ่มรายการเทรด";
+      if (tradeForm) tradeForm.reset();
+      if (resultSelect) resultSelect.value = "WIN";
+    }
+
+    function onEditTrade(tradeId) {
+      const topic = findTopicById(selectedTopicId);
+      if (!topic) return;
+      const trade = (topic.trades || []).find((t) => t.id === tradeId);
+      if (!trade) return;
+      enterEditMode(trade);
+    }
+
+    function onDeleteTrade(tradeId) {
+      if (!selectedTopicId) return;
+      deleteTrade(tradeId);
+    }
+
+    function onOpenTradeImage(tradeId, imgIndex) {
+      const topic = findTopicById(selectedTopicId);
+      if (!topic) return;
+      const trade = (topic.trades || []).find((t) => t.id === tradeId);
+      if (!trade || !(trade.images || []).length) return;
+      openLightbox(tradeId, trade.images, imgIndex || 0);
+    }
+
+    function updateLightboxImage() {
+      const imgEl = document.getElementById("lightboxImage");
+      const counterEl = document.getElementById("lightboxCounter");
+      if (!currentLightboxImages.length) return;
+      imgEl.src = currentLightboxImages[currentLightboxIndex];
+      counterEl.textContent = `${currentLightboxIndex + 1} / ${
+        currentLightboxImages.length
+      }`;
+    }
+
+    function openLightbox(tradeId, images, index) {
+      if (!images || !images.length) return;
+      currentLightboxTradeId = tradeId;
+      currentLightboxImages = images;
+      currentLightboxIndex = index || 0;
+
+      updateLightboxImage();
+      const lightbox = document.getElementById("imageLightbox");
+      lightbox.classList.add("show");
+    }
+
+    function closeLightbox() {
+      const lightbox = document.getElementById("imageLightbox");
+      lightbox.classList.remove("show");
+      currentLightboxImages = [];
+      currentLightboxIndex = 0;
+      currentLightboxTradeId = null;
+    }
+
+    function showNextImage(delta) {
+      if (!currentLightboxImages.length) return;
+      currentLightboxIndex =
+        (currentLightboxIndex + delta + currentLightboxImages.length) %
+        currentLightboxImages.length;
+      updateLightboxImage();
+    }
+
+    function onDeleteCurrentImage() {
+      if (!currentLightboxTradeId) return;
+      const topic = findTopicById(selectedTopicId);
+      if (!topic) return;
+      const trade = (topic.trades || []).find(
+        (t) => t.id === currentLightboxTradeId
+      );
+      if (!trade || !trade.images || !trade.images.length) return;
+
+      trade.images.splice(currentLightboxIndex, 1);
+
+      if (!trade.images.length) {
+        closeLightbox();
+      } else {
+        if (currentLightboxIndex >= trade.images.length) {
+          currentLightboxIndex = trade.images.length - 1;
+        }
+        currentLightboxImages = trade.images;
+        updateLightboxImage();
+      }
+
+      saveToStorage();
+      renderTopicContent();
+    }
+
+    async function uploadImages(files) {
+      if (!files.length) return [];
+      const formData = new FormData();
+      files.forEach((file) => formData.append("images", file));
+
+      const res = await fetch(`${API_BASE}/upload`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        console.error("Upload failed", res.status);
+        alert("อัปโหลดรูปไม่สำเร็จ");
+        return [];
+      }
+
+      const data = await res.json();
+      return data.urls || [];
+    }
+
+    function setCurrentUser(userId) {
+      currentUserId = userId || "default";
+      localStorage.setItem("forexJournal_currentUser", currentUserId);
+      const userInput = document.getElementById("userIdInput");
+      if (userInput) userInput.value = currentUserId;
+
+      loadFromStorage();
+      renderTopicsList();
+      renderGlobalDashboard();
+
+      const noTopicState = document.getElementById("noTopicState");
+      const topicContent = document.getElementById("topicContent");
+      selectedTopicId = topics[0]?.id || null;
+      if (selectedTopicId) {
+        noTopicState.style.display = "none";
+        topicContent.style.display = "flex";
+        renderTopicContent();
+      } else {
+        noTopicState.style.display = "flex";
+        topicContent.style.display = "none";
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const savedUser =
+        localStorage.getItem("forexJournal_currentUser") || "default";
+      setCurrentUser(savedUser);
+
+      const topicForm = document.getElementById("topicForm");
+      const tradeForm = document.getElementById("tradeForm");
+      const topicListEl = document.getElementById("topicList");
+      const userIdInput = document.getElementById("userIdInput");
+      const switchUserBtn = document.getElementById("switchUserBtn");
+
+      const lightboxEl = document.getElementById("imageLightbox");
+      const lightboxBackdrop = document.getElementById("lightboxBackdrop");
+      const lightboxClose = document.getElementById("lightboxClose");
+      const lightboxPrev = document.getElementById("lightboxPrev");
+      const lightboxNext = document.getElementById("lightboxNext");
+      const lightboxDelete = document.getElementById("lightboxDelete");
+      const cancelEditBtn = document.getElementById("cancelEditBtn");
+
+      if (userIdInput) userIdInput.value = currentUserId;
+
+      // เปลี่ยนผู้ใช้
+      switchUserBtn.addEventListener("click", () => {
+        const val = (userIdInput.value || "").trim();
+        if (!val) {
+          alert("กรุณากรอกชื่อผู้ใช้ (อะไรก็ได้ที่จำได้)");
+          return;
+        }
+        setCurrentUser(val);
+      });
+
+      // Topic form
+      topicForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (!currentUserId) {
+          alert("กรุณาตั้งค่าผู้ใช้ก่อน");
+          return;
+        }
+
+        const nameInput = document.getElementById("topicName");
+        const descInput = document.getElementById("topicDescription");
+        const name = nameInput.value.trim();
+        const description = descInput.value.trim();
+
+        if (!name) return;
+
+        const newTopic = {
+          id: Date.now().toString(),
+          name,
+          description,
+          trades: [],
+        };
+        topics.unshift(newTopic);
+        saveToStorage();
+        nameInput.value = "";
+        descInput.value = "";
+        renderTopicsList();
+        selectTopic(newTopic.id);
+        renderGlobalDashboard();
+      });
+
+      // Switch topic
+      topicListEl.addEventListener("click", (e) => {
+        const item = e.target.closest(".topic-item");
+        if (!item) return;
+        const id = item.getAttribute("data-id");
+        selectTopic(id);
+      });
+
+      // Trade form (add / edit)
+      tradeForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        if (!selectedTopicId) {
+          alert("กรุณาเลือกหัวข้อก่อนเพิ่มรายการเทรด");
+          return;
+        }
+
+        const titleInput = document.getElementById("tradeTitle");
+        const detailsInput = document.getElementById("tradeDetails");
+        const resultSelect = document.getElementById("tradeResult");
+        const amountInput = document.getElementById("tradeAmount");
+        const imageInput = document.getElementById("tradeImage");
+
+        const title = titleInput.value.trim();
+        const details = detailsInput.value.trim();
+        const result = resultSelect.value;
+        const rawAmount = Number(amountInput.value);
+        if (!title || isNaN(rawAmount)) {
+          return;
+        }
+
+        const amount = Math.abs(rawAmount);
+        const baseData = { title, details, result, amount };
+
+        const files = imageInput.files ? Array.from(imageInput.files) : [];
+        const limitedFiles = files.slice(0, 10);
+
+        const topic = findTopicById(selectedTopicId);
+        if (!topic) return;
+
+        // แก้ไขเทรด
+        if (editingTradeId) {
+          const trade = (topic.trades || []).find(
+            (t) => t.id === editingTradeId
+          );
+          if (!trade) {
+            exitEditMode();
+            return;
+          }
+
+          trade.title = title;
+          trade.details = details;
+          trade.result = result;
+          trade.amount = amount;
+
+          if (limitedFiles.length) {
+            const urls = await uploadImages(limitedFiles);
+            if (urls.length) {
+              trade.images = urls;
+            }
+          } else {
+            trade.images = trade.images || [];
+          }
+
+          saveToStorage();
+          renderTopicContent();
+          renderTopicsList();
+          renderGlobalDashboard();
+          exitEditMode();
+          return;
+        }
+
+        // เพิ่มเทรดใหม่
+        let imageUrls = [];
+        if (limitedFiles.length) {
+          imageUrls = await uploadImages(limitedFiles);
+        }
+
+        addTradeToTopic({ ...baseData, images: imageUrls });
+        tradeForm.reset();
+        resultSelect.value = "WIN";
+      });
+
+      // ยกเลิกการแก้ไข
+      if (cancelEditBtn) {
+        cancelEditBtn.addEventListener("click", () => {
+          exitEditMode();
+        });
+      }
+
+      // Lightbox events
+      lightboxBackdrop.addEventListener("click", closeLightbox);
+      lightboxClose.addEventListener("click", closeLightbox);
+      lightboxPrev.addEventListener("click", () => showNextImage(-1));
+      lightboxNext.addEventListener("click", () => showNextImage(1));
+      lightboxDelete.addEventListener("click", onDeleteCurrentImage);
+
+      document.addEventListener("keydown", (e) => {
+        if (!lightboxEl.classList.contains("show")) return;
+        if (e.key === "Escape") {
+          closeLightbox();
+        } else if (e.key === "ArrowLeft") {
+          showNextImage(-1);
+        } else if (e.key === "ArrowRight") {
+          showNextImage(1);
+        }
+      });
+
+      if (topics.length > 0 && !selectedTopicId) {
+        selectTopic(topics[0].id);
+      }
+    });
+  </script>
+</body>
+</html>
